@@ -271,6 +271,8 @@ class KlipperScreen(Gtk.Window):
             requested_updates['objects'][h] = ["target", "temperature"]
         for f in self.printer.get_fans():
             requested_updates['objects'][f] = ["speed"]
+        for c in self.printer.get_other_controllers():
+            requested_updates['objects'][c] = ["target", "value", "units"]
 
         self._ws.klippy.object_subscription(requested_updates)
         self._ws.klippy.object_query(requested_updates, lambda d, q, p: self.printer.process_update( d["result"]["status"]))

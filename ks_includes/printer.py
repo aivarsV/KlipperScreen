@@ -69,6 +69,12 @@ class Printer:
                 r['max_y'] = float(r['max_y'])
                 r['min_y'] = float(r['min_y'])
                 r['points'] = [[float(j.strip()) for j in i.split(",")] for i in r['points'].strip().split("\n")]
+            if x.startswith('adc_pwm_controller '):
+                self.devices[x] = {
+                        "value": 0.,
+                        "target": 0.,
+                        "units": ""
+                        }
         self.process_update(data)
 
         logging.info("Klipper version: %s", self.klipper['version'])
@@ -88,7 +94,7 @@ class Printer:
             'webhooks'
         ]
 
-        for x in (self.get_tools() + self.get_heaters()):
+        for x in (self.get_tools() + self.get_heaters() + self.get_other_controllers()):
             if x in data:
                 for i in data[x]:
                     if data[x][i] is not None:
@@ -189,6 +195,9 @@ class Printer:
             for f in self.get_config_section_list("%s " % type):
                 fans.append(f)
         return fans
+
+    def get_other_controllers(self):
+        return self.get_config_section_list("adc_pwm_controller")
 
     def get_gcode_macros(self):
         return self.get_config_section_list("gcode_macro ")

@@ -42,6 +42,10 @@ class MainPanel(MenuPanel):
                 self.labels[h] = self._gtk.ButtonImage("heat-up", name)
             self.heaters.append(h)
 
+        for c in self._printer.get_other_controllers():
+            self.labels[c] = self._gtk.ButtonImage(c.split(" ")[-1], "val")
+            self.heaters.append(c)
+
         cols = 3 if len(self.heaters) > 4 else (1 if len(self.heaters) <= 2 else 2)
         if self._config.get_main_config_option("branding", "").lower() in ['true', '1', 't', 'y', 'yes']:
             eq_grid.attach(self._gtk.ButtonImage("manufacturer_logo", width_scale=6, height_scale=2), 0, 0, cols, 1)
@@ -92,4 +96,7 @@ class MainPanel(MenuPanel):
                 self._printer.get_dev_stat(h, "target"),
                 None if h == "heater_bed" else " ".join(h.split(" ")[1:])
             )
+        for c in self._printer.get_other_controllers():
+            stats = self._printer.get_dev_stats(c)
+            self.labels[c].set_label("%.2f%s" %(stats["value"], stats["units"]))
         return
