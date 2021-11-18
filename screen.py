@@ -273,6 +273,7 @@ class KlipperScreen(Gtk.Window):
             requested_updates['objects'][f] = ["speed"]
 
         self._ws.klippy.object_subscription(requested_updates)
+        self._ws.klippy.object_query(requested_updates, lambda d, q, p: self.printer.process_update( d["result"]["status"]))
 
     def _load_panel(self, panel, *args):
         if panel not in self.load_panel:

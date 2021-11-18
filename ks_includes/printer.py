@@ -91,7 +91,8 @@ class Printer:
         for x in (self.get_tools() + self.get_heaters()):
             if x in data:
                 for i in data[x]:
-                    self.set_dev_stat(x, i, data[x][i])
+                    if data[x][i] is not None:
+                        self.set_dev_stat(x, i, data[x][i])
 
         for x in data:
             if x == "configfile":

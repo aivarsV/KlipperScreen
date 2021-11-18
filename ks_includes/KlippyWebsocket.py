@@ -226,6 +226,13 @@ class MoonrakerApi:
             "printer.objects.subscribe",
             updates
         )
+    def object_query(self, objects, callback=None, *args):
+        return self._ws.send_method(
+            "printer.objects.query",
+            objects,
+            callback,
+            *args
+        )
 
     def power_device_off(self, device, callback=None, *args):
         logging.debug("Sending machine.device_power.off: %s" % device)
