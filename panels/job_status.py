@@ -109,6 +109,15 @@ class JobStatusPanel(ScreenPanel):
             heater_bed_box.add(heater_bed)
             heater_bed_box.add(self.labels['heater_bed'])
             temp_grid.attach(heater_bed_box, 1, 0, 1, 1)
+        for c in self._printer.get_other_controllers():
+            self.labels[c] = Gtk.Label(label='')
+            self.labels[c].get_style_context().add_class("printing-info")
+            img = self._gtk.Image(c.split(' ')[-1] +'.svg', None, .6, .6)
+            ctrl_box = Gtk.Box(spacing=0)
+            ctrl_box.add(img)
+            ctrl_box.add(self.labels[c])
+            temp_grid.attach(ctrl_box, 2, 0, 1, 1)
+
         self.labels['temp_grid'] = temp_grid
 
         # Create time remaining items
@@ -376,6 +385,10 @@ class JobStatusPanel(ScreenPanel):
                 self._printer.get_dev_stat(x, "temperature"),
                 self._printer.get_dev_stat(x, "target")
             )
+
+        for c in self._printer.get_other_controllers():
+            stats = self._printer.get_dev_stats(c)
+            self.labels[c].set_label("%.2f%s" %(stats["value"], stats["units"]))
 
         ps = self._printer.get_stat("print_stats")
         vsd = self._printer.get_stat("virtual_sdcard")
