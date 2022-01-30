@@ -145,6 +145,14 @@ class BasePanel(ScreenPanel):
             heater_bed_box.pack_start(self.labels['heater_bed'], True, 3, 3)
             self.control['temp_box'].pack_end(heater_bed_box, True, 3, 3)
 
+        for c in self._printer.get_other_controllers():
+            img = self._gtk.Image(c.split(' ')[-1] +'.svg', None, .4, .4)
+            ctrl_box = Gtk.Box(spacing=0)
+            self.labels[c] = Gtk.Label(label='')
+            ctrl_box.pack_start(img, True, 5, 5)
+            ctrl_box.pack_start(self.labels[c], True, 3, 3)
+            self.control['temp_box'].pack_end(ctrl_box, True, 3, 3)
+
 
     def activate(self):
         size = self.control['time_box'].get_allocation().width
@@ -192,6 +200,10 @@ class BasePanel(ScreenPanel):
                 self.current_extruder = data["toolhead"]["extruder"]
                 self.control['temp_box'].pack_start(self.labels["%s_box" % self.current_extruder], True, 3, 3)
                 self.control['temp_box'].show_all()
+
+        for c in self._printer.get_other_controllers():
+            stats = self._printer.get_dev_stats(c)
+            self.labels[c].set_label("%.2f%s" %(stats["value"], stats["units"]))
 
 
     def remove(self, widget):
