@@ -52,6 +52,24 @@ class MovePanel(ScreenPanel):
 
         grid.attach(self.labels['home'], 0, 0, 1, 1)
 
+        cfg = self._config.get_config()
+        r = 0
+        c = 4
+        for category in sorted(cfg.keys()):
+            if not category.startswith('move macro_'):
+                continue
+            macro = cfg[category]
+            self.labels[category] = self._gtk.ButtonImage(
+                                        macro["icon"],
+                                        _(macro["name"]),
+                                        macro["color"])
+            self.labels[category].connect("clicked", self.run_macro, macro["script"])
+            grid.attach(self.labels[category], c, r, 1, 1)
+            r += 1
+            if r >= 2:
+                r = 0
+                c += 1
+
         distgrid = Gtk.Grid()
         j = 0
         for i in self.distances:
@@ -115,6 +133,9 @@ class MovePanel(ScreenPanel):
             if i == self.distance:
                 continue
             self.labels[str(i)].set_active(False)
+
+    def run_macro(self, widget, macro):
+        self._screen._ws.klippy.gcode_script(macro.format(self))
 
     def move(self, widget, axis, dir):
         if self._config.get_config()['main'].getboolean("invert_%s" % axis.lower(), False):
