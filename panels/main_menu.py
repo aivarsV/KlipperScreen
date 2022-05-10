@@ -46,6 +46,18 @@ class MainPanel(MenuPanel):
             self.labels[c] = self._gtk.ButtonImage(c.split(" ")[-1], "val")
             self.heaters.append(c)
 
+        cfg = self._config.get_config()
+        _ = self.lang.gettext
+        for category in sorted(cfg.keys()):
+            if not category.startswith('main macro_'):
+                continue
+            macro = cfg[category]
+            self.labels[category] = self._gtk.ButtonImage(
+                                        macro["icon"],
+                                        _(macro["name"]))
+            self.labels[category].connect("clicked", self.run_macro, macro["script"])
+            self.heaters.append(category)
+
         cols = 3 if len(self.heaters) > 4 else (1 if len(self.heaters) <= 2 else 2)
         if self._config.get_main_config_option("branding", "").lower() in ['true', '1', 't', 'y', 'yes']:
             eq_grid.attach(self._gtk.ButtonImage("manufacturer_logo", width_scale=6, height_scale=2), 0, 0, cols, 1)
@@ -78,6 +90,9 @@ class MainPanel(MenuPanel):
 
     def activate(self):
         return
+
+    def run_macro(self, widget, macro):
+        self._screen._ws.klippy.gcode_script(macro.format(self))
 
     def process_update(self, action, data):
         if action != "notify_status_update":
