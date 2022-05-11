@@ -425,8 +425,10 @@ class JobStatusPanel(ScreenPanel):
                 self.labels['speed'].set_text("%3d%%" % self.speed)
 
         if "fan" in data and "speed" in data['fan']:
-            self.fan = int(round(data['fan']['speed'], 2)*100)
-            self.labels['fan'].set_text("%3d%%" % self.fan)
+            fanspeed = data['fan']['speed']
+            if fanspeed is not None:
+                self.fan = int(round(fanspeed, 2)*100)
+                self.labels['fan'].set_text("%3d%%" % self.fan)
 
         if self.state in ["cancelling", "cancelled", "complete", "error"]:
             return
